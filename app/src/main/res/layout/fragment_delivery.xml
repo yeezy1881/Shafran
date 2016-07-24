@@ -1,0 +1,32 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="match_parent"
+    tools:context="kz.qstore.shafran.DeliveryFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/delivery"
+        android:id="@+id/delivery"/>
+
+    <TextView
+        android:layout_margin="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="24dp"
+        android:text="Доставка"
+        android:textColor="@android:color/black"/>
+
+
+    <TextView
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:textSize="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="- Доставка в пределах города составляет 300 тг.\n- При заказе от 4000 тг доставка бесплатная.\n- Доставка от момента подтверждения заказа составляет не более 50 минут.\n- После осуществления заказа Вам позвонит наш менеджер.\nС радостью ждём Ваших заказов!"/>
+
+</LinearLayout>

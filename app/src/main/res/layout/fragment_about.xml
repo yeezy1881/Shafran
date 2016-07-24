@@ -1,0 +1,35 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="kz.qstore.shafran.AboutFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/team"
+        android:scaleType="fitXY"
+        android:id="@+id/image"
+        />
+
+    <TextView
+        android:layout_margin="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="24dp"
+        android:text="О нас"
+        android:textColor="@android:color/black"/>
+
+    <TextView
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:textSize="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Приветствуем дорогих гостей в нашем заведении. Теперь мы с радостью готовы предложить Вам доставку наших блюд прямо на дом.\nВкуснейшая дунганская кухня с европейским оттенком не оставит Вас и Ваших друзей равнодушными."/>
+
+</LinearLayout>

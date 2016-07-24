@@ -1,0 +1,37 @@
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="-8dp"
+    android:id="@+id/ingr_ll">
+
+
+
+        <TextView
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="&#8226;"
+            android:textSize="28dp"
+            android:layout_marginLeft="16dp"
+            android:textColor="#C0392b"/>
+        <TextView
+            android:id="@+id/ingr_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Картофель"
+            android:layout_marginLeft="16dp"
+            android:fontFamily="roboto"
+            android:textStyle="italic"/>
+    </LinearLayout>
+
+</LinearLayout>
