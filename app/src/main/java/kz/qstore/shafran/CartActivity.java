@@ -280,6 +280,7 @@ public class CartActivity extends AppCompatActivity {
                     foodItemList.addAll(cart.getProducts());
                     adapter.notifyDataSetChanged();
                     ActionItemBadge.update(cartItem, cart.getTotalQuantity());
+                    proceed.setText(cart.getTotalPrice()+" тг");
                     if(cart.getTotalQuantity() == 1){
                         total.setText(1 + "товар");
                     }
@@ -298,6 +299,8 @@ public class CartActivity extends AppCompatActivity {
                     Cart cart = CartHelper.getCart();
                     int q = cart.getQuantity(foodArrayList.get(w));
                     cart.remove(foodArrayList.get(w), 1);
+
+                    proceed.setText(cart.getTotalPrice()+" тг");
 
                     if(q > 1){
                         adapter.notifyItemChanged(w);
