@@ -17,6 +17,9 @@ import android.widget.TextView;
 
 import com.android.tonyvu.sc.model.Cart;
 import com.android.tonyvu.sc.util.CartHelper;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -148,14 +151,43 @@ public class MenuFragment extends Fragment {
         }
 
         @Override
-        public void onBindViewHolder(FoodItemHolder foodItemHolder, int i){
-            foodItem f = foodList.get(i);
+        public void onBindViewHolder(final FoodItemHolder foodItemHolder, int i){
+            final foodItem f = foodList.get(i);
             foodItemHolder.textView.setText(f.getName());
             //foodItemHolder.imageView.setImageResource(f.getItemImage());
             Picasso.with(getActivity()).load(f.getItemImage())
                     .error(R.drawable.placeholder)
                     .placeholder(R.drawable.placeholder)
                     .into(foodItemHolder.imageView);
+
+            Picasso.with(getActivity())
+                    .load(f.getItemImage())
+                    .networkPolicy(NetworkPolicy.OFFLINE)
+                    .into(foodItemHolder.imageView, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            Log.d("IMAGE LOAD", "LOADED FROM CACHE");
+                        }
+
+                        @Override
+                        public void onError() {
+                            //Try again online if cache failed
+                            Picasso.with(getActivity())
+                                    .load(f.getItemImage())
+                                    .error(R.drawable.placeholder)
+                                    .into(foodItemHolder.imageView, new Callback() {
+                                        @Override
+                                        public void onSuccess() {
+                                            Log.d("IMAGE LOAD", "LOADED FROM INTERNET");
+                                        }
+
+                                        @Override
+                                        public void onError() {
+                                            Log.v("Picasso","Could not fetch image");
+                                        }
+                                    });
+                        }
+                    });
         }
 
         @Override

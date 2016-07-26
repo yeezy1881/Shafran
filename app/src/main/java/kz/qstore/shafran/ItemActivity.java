@@ -29,6 +29,8 @@ import android.widget.TextView;
 import com.android.tonyvu.sc.model.Cart;
 import com.android.tonyvu.sc.util.CartHelper;
 import com.mikepenz.actionitembadge.library.ActionItemBadge;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -54,8 +56,12 @@ public class ItemActivity extends AppCompatActivity {
 
     int id;
 
+    AppCompatActivity act;
+
     String json;
     List<Ingredient> ingList;
+
+    static Boolean loaded = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +71,7 @@ public class ItemActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
 
+        act = this;
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -134,24 +141,54 @@ Log.d("JSON", json);
         TextView descr = (TextView) findViewById(R.id.descr);
 
         ct.setExpandedTitleTypeface(tf);
-        Picasso.with(this).load(food.getItemImage()).error(R.drawable.placeholder).placeholder(R.drawable.placeholder).into(new Target(){
 
-            @Override
-            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                appBar.setBackground(new BitmapDrawable(getResources(), bitmap));
-            }
 
-            @Override
-            public void onBitmapFailed(final Drawable errorDrawable) {
-                Log.d("TAG", "FAILED");
-            }
 
-            @Override
-            public void onPrepareLoad(final Drawable placeHolderDrawable) {
-                Log.d("TAG", "Prepare Load");
-            }
-        });
 
+        Picasso.with(act)
+                .load(food.getItemImage())
+                .networkPolicy(NetworkPolicy.OFFLINE)
+                .into(new Target(){
+
+                    @Override
+                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                        appBar.setBackground(new BitmapDrawable(getResources(), bitmap));
+                        loaded = true;
+                        Log.d("IMAGE LOAD", "LOADED FROM CACHE");
+                    }
+
+                    @Override
+                    public void onBitmapFailed(final Drawable errorDrawable) {
+                        Log.d("TAG", "FAILED");
+                    }
+
+                    @Override
+                    public void onPrepareLoad(final Drawable placeHolderDrawable) {
+                        Log.d("TAG", "Prepare Load");
+                    }
+                });
+
+        if(!loaded) {
+
+            Log.d("IMAGE LOAD","LOADING IMAGE FROM INTERNET");
+            Picasso.with(this).load(food.getItemImage()).into(new Target() {
+
+                @Override
+                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                    appBar.setBackground(new BitmapDrawable(getResources(), bitmap));
+                }
+
+                @Override
+                public void onBitmapFailed(final Drawable errorDrawable) {
+                    Log.d("TAG", "FAILED");
+                }
+
+                @Override
+                public void onPrepareLoad(final Drawable placeHolderDrawable) {
+                    Log.d("TAG", "Prepare Load");
+                }
+            });
+        }
 
         getSupportActionBar().setTitle("");
 
