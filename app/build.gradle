@@ -34,4 +34,6 @@ dependencies {
     compile 'com.afollestad.material-dialogs:core:0.8.6.1'
     compile 'com.squareup.okhttp:okhttp:2.4.0'
     apply plugin: 'realm-android'
+    compile 'com.vk:androidsdk:1.6.5'
+
 }

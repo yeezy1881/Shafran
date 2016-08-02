@@ -1,6 +1,7 @@
 package kz.qstore.shafran;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -33,6 +34,10 @@ import com.android.volley.toolbox.Volley;
 import com.mikepenz.actionitembadge.library.ActionItemBadge;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -51,6 +56,9 @@ public class CartActivity extends AppCompatActivity {
     Button proceed;
     Activity act;
 
+    String order = "";
+    String json = "";
+
     static int pos[];
 
 
@@ -61,6 +69,24 @@ public class CartActivity extends AppCompatActivity {
         cart = CartHelper.getCart();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        JSONArray array = new JSONArray();
+        ArrayList<Saleable> list = new ArrayList<>();
+        list.addAll(cart.getProducts());
+        for(int i = 0; i < list.size(); i++){
+
+            try {
+                JSONObject object = new JSONObject();
+                object.put("name", list.get(i).getName());
+                object.put("quantity", cart.getQuantity(list.get(i)));
+                object.put("price", cart.getCost(list.get(i)).toString());
+                array.put(object);
+            }
+            catch (JSONException e){
+                e.printStackTrace();
+            }
+        }
+        order = array.toString();
 
     total = (TextView) findViewById(R.id.total);
         pos = new int[100500];
@@ -117,16 +143,22 @@ public class CartActivity extends AppCompatActivity {
                             @Override
                             public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                                 Log.d("POSITIVE", "PRESSED");
-                                final EditText name, phone, street, house, flat;
+                                final EditText name, phone, adress;
                                 name = (EditText) dialog.findViewById(R.id.name);
                                 phone = (EditText) dialog.findViewById(R.id.phone);
-                                street = (EditText) dialog.findViewById(R.id.street);
-                                house = (EditText) dialog.findViewById(R.id.house);
-                                flat = (EditText) dialog.findViewById(R.id.flat);
-                                if (name.getText().toString().length() == 0 || phone.getText().toString().length() == 0 || street.getText().toString().length() == 0 || house.getText().toString().length() == 0) {
+                                adress = (EditText) dialog.findViewById(R.id.adress);
+                                if (phone.getText().toString().length() == 0) {
                                     Toast.makeText(dialog.getContext(), "Введите все данные", Toast.LENGTH_LONG).show();
                                 } else {
-                                    String url = "http://qstore.kz/postorder";
+
+
+
+                                    Log.d("CART SIZE", cart.getTotalQuantity()+"");
+
+
+                                    final SharedPreferences userInfo = getSharedPreferences("userInfo", MODE_PRIVATE);
+
+                                    String url = "http://qstore.kz/postorder/"+userInfo.getString("token", "0");
                                     StringRequest postRequest = new StringRequest(Request.Method.POST, url,
                                             new Response.Listener<String>() {
                                                 @Override
@@ -139,7 +171,7 @@ public class CartActivity extends AppCompatActivity {
                                                 @Override
                                                 public void onErrorResponse(VolleyError error) {
                                                     // error
-                                                    Log.d("Error.Response", "ERROR");
+                                                    Log.d("Error.Response", error.networkResponse.toString());
                                                 }
                                             }
                                     ) {
@@ -150,32 +182,34 @@ public class CartActivity extends AppCompatActivity {
                                             list.addAll(cart.getProducts());
 
 
-                                            StringBuilder builder = new StringBuilder();
-                                            for (int i = 0; i < list.size(); i++) {
-                                                builder.append(list.get(i).getName());
-                                                builder.append(" ");
-                                                builder.append(cart.getQuantity(list.get(i)));
-                                                builder.append("\n");
-                                            }
+
+
+
                                             params.put("name", name.getText().toString());
                                             params.put("phone", phone.getText().toString());
-                                            params.put("street", street.getText().toString());
-                                            params.put("house", house.getText().toString());
-                                            params.put("flat", flat.getText().toString());
-                                            params.put("body", builder.toString());
-
+                                            params.put("adress", adress.getText().toString());
+                                            params.put("body", json);
+                                            Log.d("JSON ORDER", order);
+                                            params.put("order", order);
+                                            Log.d("BODY", json);
+                                            params.put("vk_id", userInfo.getString("vk_id", "0"));
                                             return params;
                                         }
                                     };
-                                    Volley.newRequestQueue(act).add(postRequest);
+                                    Volley.newRequestQueue(getApplicationContext()).add(postRequest);
                                     Toast.makeText(dialog.getContext(), "Ваш заказ принят", Toast.LENGTH_LONG).show();
                                     dialog.dismiss();
                                 }
+
+
+
                                 cart.clear();
                                 foodItemList.clear();
                                 adapter.notifyDataSetChanged();
                                 total.setText("0 товаров");
                                 proceed.setText("0 тг");
+                                updateCartIcon();
+
                             }
                         })
                         .show();
@@ -279,6 +313,30 @@ public class CartActivity extends AppCompatActivity {
                     foodItemList.clear();
                     foodItemList.addAll(cart.getProducts());
                     adapter.notifyDataSetChanged();
+                    JSONArray array = new JSONArray();
+                    ArrayList<Saleable> list = new ArrayList<>();
+                    StringBuilder builder = new StringBuilder();
+                    list.addAll(cart.getProducts());
+                    for(int i = 0; i < list.size(); i++){
+
+                        try {
+                            JSONObject object = new JSONObject();
+                            object.put("name", list.get(i).getName());
+                            object.put("quantity", cart.getQuantity(list.get(i)));
+                            object.put("price", cart.getCost(list.get(i)).toString());
+                            array.put(object);
+                        }
+                        catch (JSONException e){
+                            e.printStackTrace();
+                        }
+
+                        builder.append(list.get(i).getName());
+                        builder.append(" ");
+                        builder.append(cart.getQuantity(list.get(i)));
+                        builder.append("\n");
+                    }
+                    json = builder.toString();
+                    order = array.toString();
                     ActionItemBadge.update(cartItem, cart.getTotalQuantity());
                     proceed.setText(cart.getTotalPrice()+" тг");
                     if(cart.getTotalQuantity() == 1){
@@ -302,16 +360,26 @@ public class CartActivity extends AppCompatActivity {
 
                     proceed.setText(cart.getTotalPrice()+" тг");
 
-                    if(q > 1){
+                    JSONArray array = new JSONArray();
+                    ArrayList<Saleable> list = new ArrayList<>();
+                    list.addAll(cart.getProducts());
+                    for(int i = 0; i < list.size(); i++){
+
+                        try {
+                            JSONObject object = new JSONObject();
+                            object.put("name", list.get(i).getName());
+                            object.put("quantity", cart.getQuantity(list.get(i)));
+                            object.put("price", cart.getCost(list.get(i)).toString());
+                            array.put(object);
+                        }
+                        catch (JSONException e){
+                            e.printStackTrace();
+                        }
+                    }
+                    order = array.toString();
+
                         adapter.notifyItemChanged(w);
-                    }
-                    else{
-                        adapter.notifyItemRemoved(w);
-                        Log.d("ASDF", foodItemList.size()+"");
-                        foodItemList.clear();
-                        foodItemList.addAll(cart.getProducts());
-                        notifyDataSetChanged();
-                    }
+
 
                     if(cart.getTotalQuantity() == 1){
                         total.setText(1 + "товар");
